@@ -1,0 +1,106 @@
+1. Configure SMTP in Localhost:
+commands:
+sudo apt update
+sudo apt install postfix -y
+During installation:
+- Select Local only
+- System mail name: localhost
+Verifying the status of postfix:
+systemctl status postfix
+Test Mail
+echo "Test Mail" | mail -s "SMTP Test" sigmoid@localhost
+------------------------------------------------------------------
+2. Create a User Without sudo Access:
+
+sudo useradd testuser
+sudo passwd testuser
+
+Ensure user is **not** in sudo group:
+groups testuser
+
+checking the user:
+su - testuser
+sudo ls
+
+Expected: permission denied
+
+-----------------------------------------------------------------------
+3.Create `describe` Command
+
+creating the script
+sudo nano /usr/local/bin/describe
+
+script content:
+#!/bin/bash
+ls
+
+permission:
+sudo chmod +x /usr/local/bin/describe
+
+using the command
+describe
+-----------------------------------------------------------------------------
+4.Find & Uncompress `research` File Anywhere
+
+Find file:
+find / -type f -name "research.*" 2>/dev/null
+
+Identify Compression Type:
+file research.*
+
+Uncompress Based on Type:
+gunzip research.gz
+
+unzip research.zip
+
+tar -xvf research.tar
+------------------------------------------------------------------------------
+5.Restrict File Permissions Automatically (Without chmod):
+Method used :
+umask
+
+commmand:
+Apply umask system-wide:
+sudo nano /etc/profile
+edit umask as unmask 777
+umask 777
+
+Any new file created:
+touch testfile
+ls -l testfile
+Permission: `----------`
+Permissions are controlled at creation time using umask.
+--------------------------------------------------------------------------------
+6.Create `showtime` System Service:
+
+Script:
+#!/bin/bash
+while true
+do
+  date >> /home/username/showtime.log
+  sleep 60
+done
+
+
+permission:
+sudo chmod +x /usr/local/bin/showtime.sh
+
+Service File:
+sudo nano /etc/systemd/system/showtime.service
+
+[Unit]
+Description=Show Time Service
+
+[Service]
+ExecStart=/usr/local/bin/showtime.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+Reload and starting the service:
+sudo systemctl daemon-reload
+sudo systemctl start showtime
+sudo systemctl stop showtime
+sudo systemctl status showtime
+----------------------------------------------------------------------
